@@ -37,7 +37,7 @@ services:
     plan: free
     envVars:
       - key: API_URL
-        value: http://memorygraph-api:10000
+        value: https://memorygraph-api-yqtp.onrender.com
 
   # 3. Managed Redis (Key Value) on Render
   - type: redis
