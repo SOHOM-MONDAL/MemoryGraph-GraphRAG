@@ -4,9 +4,9 @@ import os
 import requests
 import streamlit as st
 
-API_URL = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
-if not API_URL.startswith("http://") and not API_URL.startswith("https://"):
-    API_URL = f"http://{API_URL}"
+DEFAULT_API_URL = os.getenv("API_URL", "https://memorygraph-api-yqtp.onrender.com").rstrip("/")
+if not DEFAULT_API_URL.startswith("http://") and not DEFAULT_API_URL.startswith("https://"):
+    DEFAULT_API_URL = f"https://{DEFAULT_API_URL}"
 
 st.set_page_config(
     page_title="MemoryGraph",
@@ -64,6 +64,16 @@ with st.sidebar:
     headers = get_headers(user_id)
 
     st.markdown("---")
+    st.subheader("🌐 Backend URL")
+    API_URL = st.text_input(
+        "API Endpoint",
+        value=DEFAULT_API_URL,
+        help="Backend FastAPI service URL. You can adjust this if deploying on a new URL.",
+    ).strip().rstrip("/")
+    if not API_URL.startswith("http://") and not API_URL.startswith("https://"):
+        API_URL = f"https://{API_URL}"
+
+    st.markdown("---")
     st.subheader("📁 Documents")
 
     uploaded_file = st.file_uploader("Upload PDF document", type=["pdf"], key="pdf_uploader")
@@ -85,10 +95,13 @@ with st.sidebar:
                         else:
                             st.success(f"Indexed {data.get('chunk_count')} chunks successfully!")
                     else:
-                        err = res.json().get("detail", res.text)
+                        try:
+                            err = res.json().get("detail", res.text)
+                        except Exception:
+                            err = res.text or f"HTTP {res.status_code}"
                         st.error(f"Upload failed: {err}")
                 except Exception as e:
-                    st.error(f"Connection error: {str(e)}")
+                    st.error(f"Connection error to {API_URL}: {str(e)}")
 
     # List Existing Documents
     st.write("Your Indexed Documents:")
