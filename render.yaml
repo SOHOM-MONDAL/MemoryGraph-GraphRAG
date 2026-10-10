@@ -41,10 +41,7 @@ services:
       - key: PORT
         value: 8501
       - key: API_URL
-        fromService:
-          type: web
-          name: memorygraph-api
-          property: url
+        value: http://memorygraph-api:8000
 
   # 3. Managed Redis (Key Value) on Render
   - type: redis

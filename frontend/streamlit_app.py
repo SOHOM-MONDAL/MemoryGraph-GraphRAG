@@ -4,7 +4,9 @@ import os
 import requests
 import streamlit as st
 
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+API_URL = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
+if not API_URL.startswith("http://") and not API_URL.startswith("https://"):
+    API_URL = f"http://{API_URL}"
 
 st.set_page_config(
     page_title="MemoryGraph",
