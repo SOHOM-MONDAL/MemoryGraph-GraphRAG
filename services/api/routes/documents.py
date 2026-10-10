@@ -132,7 +132,7 @@ async def upload_document(
     # 1. Parsing & Extraction stage (synchronous fallback)
     store.set_status(doc_id, user_id, status="PROCESSING", stage="EXTRACTING")
     try:
-        pages = parse_pdf(content, max_mb=settings.MAX_UPLOAD_MB)
+        pages = parse_pdf(content, max_mb=settings.MAX_UPLOAD_MB, max_pages=settings.MAX_PARSE_PAGES)
     except PDFParseError as pe:
         logger.warning("PDF parsing validation failed for doc %s: %s", doc_id, str(pe))
         store.set_status(doc_id, user_id, status="FAILED", stage="EXTRACTING", error=str(pe))

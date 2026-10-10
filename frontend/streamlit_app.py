@@ -96,9 +96,17 @@ with st.sidebar:
                             st.success(f"Indexed {data.get('chunk_count')} chunks successfully!")
                     else:
                         try:
-                            err = res.json().get("detail", res.text)
+                            err_json = res.json()
+                            err = err_json.get("detail", str(err_json))
                         except Exception:
-                            err = res.text or f"HTTP {res.status_code}"
+                            if res.status_code == 502:
+                                err = "HTTP 502 Bad Gateway: The document is too large for the free cloud container memory (512MB RAM limit). Please upload a smaller PDF or individual chapters (under 15-20 MB)."
+                            elif res.status_code == 504:
+                                err = "HTTP 504 Gateway Timeout: Processing took over 100s. Please upload a smaller document."
+                            elif res.status_code == 413:
+                                err = "HTTP 413 Payload Too Large: File exceeds maximum allowed upload size."
+                            else:
+                                err = f"HTTP {res.status_code}: Server error."
                         st.error(f"Upload failed: {err}")
                 except Exception as e:
                     st.error(f"Connection error to {API_URL}: {str(e)}")

@@ -59,7 +59,8 @@ class Settings(BaseSettings):
     GRAPH_MAX_SUBGRAPH_NODES: int = 25
 
     # Storage and Uploads
-    MAX_UPLOAD_MB: int = 25
+    MAX_UPLOAD_MB: int = 50
+    MAX_PARSE_PAGES: int = 60
     UPLOAD_DIR: str = "./data/uploads"
 
     # API & Frontend

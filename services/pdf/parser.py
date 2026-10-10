@@ -42,13 +42,15 @@ def validate_pdf_bytes(content: bytes, max_mb: int = 25) -> None:
 
 def parse_pdf(
     source: Union[bytes, str, Path],
-    max_mb: int = 25,
+    max_mb: int = 50,
+    max_pages: Optional[int] = 60,
 ) -> List[PDFPage]:
     """Parse PDF page by page using PyMuPDF.
 
     Args:
         source: Raw PDF bytes or file path.
         max_mb: Maximum allowed file size in MB.
+        max_pages: Maximum number of pages to parse (prevents OOM on large books).
 
     Returns:
         List of parsed PDFPage objects with cleaned text.
@@ -70,8 +72,17 @@ def parse_pdf(
     except Exception as e:
         raise PDFParseError(f"PyMuPDF failed to open PDF document: {str(e)}") from e
 
+    total_pages = len(doc)
+    page_limit = min(total_pages, max_pages) if max_pages and max_pages > 0 else total_pages
+    if max_pages and total_pages > max_pages:
+        logger.warning(
+            "Document has %d pages; parsing first %d pages to maintain memory stability.",
+            total_pages,
+            page_limit,
+        )
+
     try:
-        for page_idx in range(len(doc)):
+        for page_idx in range(page_limit):
             page_num = page_idx + 1
             page = doc[page_idx]
             extracted_text = page.get_text("text") or ""
