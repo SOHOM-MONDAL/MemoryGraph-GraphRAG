@@ -115,7 +115,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
     )
 
 
-@app.get("/", tags=["system"])
+@app.api_route("/", methods=["GET", "HEAD"], tags=["system"])
 async def root() -> Dict[str, Any]:
     """Root endpoint providing service discovery links."""
     return {
@@ -128,7 +128,7 @@ async def root() -> Dict[str, Any]:
     }
 
 
-@app.get("/health", tags=["system"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["system"])
 async def health_check() -> Dict[str, Any]:
     """Check health of all active system dependencies in a fast, non-blocking manner."""
     settings = get_settings()
@@ -153,15 +153,15 @@ async def health_check() -> Dict[str, Any]:
         },
         "storage": {
             "type": "in_memory",
-            "healthy": storage_healthy,
+            "healthy": True,
         },
         "kafka": {
             "enabled": settings.KAFKA_ENABLED,
-            "connected": kafka_connected,
+            "connected": producer.is_connected,
         },
         "redis": {
             "enabled": settings.REDIS_ENABLED,
-            "connected": redis_connected,
+            "connected": redis_svc.is_connected(),
         },
         "mysql": {
             "enabled": settings.MYSQL_ENABLED,

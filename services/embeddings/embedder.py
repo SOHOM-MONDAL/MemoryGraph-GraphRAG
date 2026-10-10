@@ -16,18 +16,22 @@ class Embedder:
     def __init__(self, model_name: str = "BAAI/bge-small-en-v1.5", embedding_dim: int = 384) -> None:
         self.model_name = model_name
         self.embedding_dim = embedding_dim
-        self._load_model()
 
     def _load_model(self) -> None:
         """Load the SentenceTransformer model lazily if not already loaded."""
         if self._model is None:
             try:
+                import torch
+                torch.set_num_threads(1)
                 from sentence_transformers import SentenceTransformer
-                logger.info("Loading embedding model: %s", self.model_name)
-                self._model = SentenceTransformer(self.model_name)
+                logger.info("Loading embedding model on CPU (single-threaded for memory safety): %s", self.model_name)
+                self._model = SentenceTransformer(self.model_name, device="cpu")
                 logger.info("Embedding model loaded successfully.")
-            except Exception as e:
-                logger.error("Failed to load SentenceTransformer model %s: %s", self.model_name, str(e))
+            except (MemoryError, Exception) as e:
+                logger.warning(
+                    "SentenceTransformer could not be loaded (%s). Operating with lightweight deterministic embeddings.",
+                    str(e),
+                )
                 self._model = None
 
     def embed_text(self, text: str) -> List[float]:
@@ -35,6 +39,7 @@ class Embedder:
         if not text:
             return [0.0] * self.embedding_dim
 
+        self._load_model()
         if self._model is not None:
             embedding = self._model.encode(text, normalize_embeddings=True)
             return [float(x) for x in embedding]
@@ -48,6 +53,7 @@ class Embedder:
         if not texts:
             return []
 
+        self._load_model()
         if self._model is not None:
             embeddings = self._model.encode(texts, normalize_embeddings=True)
             return [[float(x) for x in emb] for emb in embeddings]
