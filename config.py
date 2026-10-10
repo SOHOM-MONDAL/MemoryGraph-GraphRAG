@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     # Embeddings
     EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
     EMBEDDING_DIM: int = 384
+    LOW_MEMORY_MODE: bool = False
 
     # Neo4j Settings
     NEO4J_URI: str = "bolt://localhost:7687"

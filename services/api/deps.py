@@ -27,6 +27,7 @@ def get_embedder_dep(settings: Settings = Depends(get_settings)) -> Embedder:
     return get_embedder(
         model_name=settings.EMBEDDING_MODEL,
         embedding_dim=settings.EMBEDDING_DIM,
+        low_memory=settings.LOW_MEMORY_MODE,
     )
 
 

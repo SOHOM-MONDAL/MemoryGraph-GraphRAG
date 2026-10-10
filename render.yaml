@@ -17,6 +17,8 @@ services:
         value: "true"
       - key: GRAPH_HOPS
         value: "2"
+      - key: LOW_MEMORY_MODE
+        value: "true"
       - key: REDIS_ENABLED
         value: "true"
       - key: REDIS_URL
