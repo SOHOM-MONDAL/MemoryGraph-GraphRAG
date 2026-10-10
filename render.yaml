@@ -4,7 +4,7 @@ services:
     name: memorygraph-api
     env: docker
     dockerfilePath: ./Dockerfile
-    plan: starter
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: PORT
@@ -36,7 +36,7 @@ services:
     name: memorygraph-frontend
     env: docker
     dockerfilePath: ./Dockerfile.frontend
-    plan: starter
+    plan: free
     envVars:
       - key: PORT
         value: 8501
@@ -46,31 +46,13 @@ services:
           name: memorygraph-api
           property: url
 
-  # 3. Kafka Asynchronous Worker (Render Background Worker)
-  - type: worker
-    name: memorygraph-worker
-    env: docker
-    dockerfilePath: ./Dockerfile
-    dockerCommand: python -m services.workers.document_worker
-    plan: starter
-    envVars:
-      - key: LLM_PROVIDER
-        value: groq
-      - key: GROQ_API_KEY
-        sync: false
-      - key: GROQ_MODEL
-        value: openai/gpt-oss-120b
-      - key: GRAPH_ENABLED
-        value: "true"
-      - key: KAFKA_ENABLED
-        value: "false"
-      - key: REDIS_ENABLED
-        value: "true"
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: memorygraph-redis
-          property: connectionString
+  # 3. Optional Kafka Worker (Uncomment if using paid Render plan + external Kafka cluster)
+  # - type: worker
+  #   name: memorygraph-worker
+  #   env: docker
+  #   dockerfilePath: ./Dockerfile
+  #   dockerCommand: python -m services.workers.document_worker
+  #   plan: starter
 
 # 4. Managed Redis on Render
 redis:
