@@ -11,7 +11,7 @@ services:
         value: 8000
       - key: LLM_PROVIDER
         value: groq
-      - key: GROQ_API_KEY
+      - key: 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
         sync: false # Render dashboard will prompt you to enter your Groq API key securely
       - key: GROQ_MODEL
         value: openai/gpt-oss-120b
