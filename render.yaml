@@ -46,16 +46,8 @@ services:
           name: memorygraph-api
           property: url
 
-  # 3. Optional Kafka Worker (Uncomment if using paid Render plan + external Kafka cluster)
-  # - type: worker
-  #   name: memorygraph-worker
-  #   env: docker
-  #   dockerfilePath: ./Dockerfile
-  #   dockerCommand: python -m services.workers.document_worker
-  #   plan: starter
-
-# 4. Managed Redis on Render
-redis:
-  - name: memorygraph-redis
+  # 3. Managed Redis (Key Value) on Render
+  - type: redis
+    name: memorygraph-redis
     plan: free
     ipAllowList: []
