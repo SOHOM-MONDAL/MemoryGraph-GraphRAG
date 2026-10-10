@@ -13,12 +13,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python requirements
+# Install Python requirements with lightweight CPU-only PyTorch
 COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Pre-cache the Sentence-Transformers embedding model so container startups don't hit Hugging Face repeatedly
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-small-en-v1.5')"
 
 # Copy application source code
 COPY . /app/
@@ -26,7 +24,7 @@ COPY . /app/
 # Ensure uploads directory exists
 RUN mkdir -p /app/data/uploads
 
-EXPOSE 8000
+EXPOSE 10000
 
-# Default command starts FastAPI API server with dynamic port support
-CMD ["sh", "-c", "uvicorn services.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Default command starts FastAPI API server with dynamic port support (defaults to Render's 10000)
+CMD ["sh", "-c", "uvicorn services.api.main:app --host 0.0.0.0 --port ${PORT:-10000}"]

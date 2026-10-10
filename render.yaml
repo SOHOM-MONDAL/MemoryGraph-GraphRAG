@@ -7,8 +7,6 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
-      - key: PORT
-        value: 8000
       - key: LLM_PROVIDER
         value: groq
       - key: GROQ_API_KEY
@@ -38,10 +36,8 @@ services:
     dockerfilePath: ./Dockerfile.frontend
     plan: free
     envVars:
-      - key: PORT
-        value: 8501
       - key: API_URL
-        value: http://memorygraph-api:8000
+        value: http://memorygraph-api:10000
 
   # 3. Managed Redis (Key Value) on Render
   - type: redis
